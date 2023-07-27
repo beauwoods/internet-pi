@@ -4,7 +4,9 @@ version: "3.5"
 
 volumes:
   prometheus_data: {}
+{% if monitoring_grafana_enabled %}
   grafana_data: {}
+{% endif %}
 
 networks:
   front-tier:
@@ -55,6 +57,7 @@ services:
       - VIRTUAL_PORT=9090
 {% endif %}
 
+{%if monitoring_grafana_enabled %}
   grafana:
     image: grafana/grafana:latest
     restart: always
@@ -77,6 +80,7 @@ services:
     environment:
       - VIRTUAL_HOST={{ domain_grafana }}.{{ domain_name }}
       - VIRTUAL_PORT=3000
+{% endif %}
 {% endif %}
 
   ping:

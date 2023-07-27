@@ -4,9 +4,34 @@
 
 **A Raspberry Pi Configuration for Internet connectivity**
 
-I have had a couple Pis doing random Internet-related duties for years. It's finally time to formalize their configs and make all the DNS/ad-blocking/monitoring stuff encapsulated into one Ansible project.
+I've been looking for a simple(ish) home internet monitoring approach for a while now and the Internet Pi project, from the always excellent Geerlinguy, seems like a good fit. After some preliminary tweaks for my own setup I decided to fork the original repo so I could have a record of what I'm doing and build an automated pipeline for repeating this. Plus I get to learn Ansible. Never can have too many hobbies, right?
 
-So that's what this is.
+One of the main updaets I've (tried) to make is to add the ability to disable Grafana, since I'll have multiple Pis on multiple networks pointing to one dashboard (connected via Tailscale for private-ish networking).
+
+I've changed the install instructions because it was always a pain to get `pip` to do anything for me and disdain installing more cruft than is needed or relying on unneeded services.
+
+1. First, let's install github from their [documentation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md "GitHub official documentation for installing gh for Raspberry Pi").
+
+   ```
+   type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+   curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+   && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+   && sudo apt update \
+   && sudo apt install gh -y
+   ```
+2. Second, let's install some of the other dependencies, like Ansible and Docker. I like getting these from the official Raspberry Pi repos, rather than `pip`, which always gave me fits. To each their own.
+   `sudo apt install docker ansible`
+3. Now clone my forked repo. Or if you want the OG, refer to the Setup instructions in Jeff's original `README.md ` - the rest of what's here is taken from down there anyway. 
+   `gh repo clone beauwoods/internet-pi`
+4. Install requirements: `ansible-galaxy collection install -r requirements.yml` (if you see `ansible-galaxy: command not found`, restart your SSH session or reboot the Pi and try again)
+5. Make copies of the following files and customize them to your liking:
+
+   - `example.inventory.ini` to `inventory.ini` (replace IP address with your Pi's IP, or comment that line and uncomment the `connection=local` line if you're running it on the Pi you're setting up).
+   - `example.config.yml` to `config.yml`
+6. Run the playbook: `ansible-playbook main.yml`
+
+> **If running locally on the Pi**: You may encounter an error like "Error while fetching server API version". If you do, please either reboot or log out and log back in, then run the playbook again.
 
 ## Features
 
@@ -20,9 +45,9 @@ So that's what this is.
 
 Other features:
 
-  - **Shelly Plug Monitoring**: Installs a [`shelly-plug-prometheus` exporter](https://github.com/geerlingguy/shelly-plug-prometheus) and a Grafana dashboard, which tracks and displays power usage on a Shelly Plug running on the local network. (Disabled by default. Enable and configure using the `shelly_plug_*` vars in `config.yml`.)
-  - **AirGradient Monitoring**: Configures [`airgradient-prometheus`](https://github.com/geerlingguy/airgradient-prometheus) and a Grafana dashboard, which tracks and displays air quality over time via one or more AirGradient DIY monitors. (Disabled by default. Enable and configure using the `airgradient_enable` var in `config.yml`. See example configuration for ability to monitor multiple AirGradient DIY stations.)
-  - **Starlink Monitoring**: Installs a [`starlink` prometheus exporter](https://github.com/danopstech/starlink_exporter) and a Grafana dashboard, which tracks and displays Starlink statistics. (Disabled by default. Enable and configure using the `starlink_enable` var in `config.yml`.)
+- **Shelly Plug Monitoring**: Installs a [`shelly-plug-prometheus` exporter](https://github.com/geerlingguy/shelly-plug-prometheus) and a Grafana dashboard, which tracks and displays power usage on a Shelly Plug running on the local network. (Disabled by default. Enable and configure using the `shelly_plug_*` vars in `config.yml`.)
+- **AirGradient Monitoring**: Configures [`airgradient-prometheus`](https://github.com/geerlingguy/airgradient-prometheus) and a Grafana dashboard, which tracks and displays air quality over time via one or more AirGradient DIY monitors. (Disabled by default. Enable and configure using the `airgradient_enable` var in `config.yml`. See example configuration for ability to monitor multiple AirGradient DIY stations.)
+- **Starlink Monitoring**: Installs a [`starlink` prometheus exporter](https://github.com/danopstech/starlink_exporter) and a Grafana dashboard, which tracks and displays Starlink statistics. (Disabled by default. Enable and configure using the `starlink_enable` var in `config.yml`.)
 
 **IMPORTANT NOTE**: If you use the included Internet monitoring, it will download a decently-large amount of data through your Internet connection on a daily basis. Don't use it, or tune the `internet-monitoring` setup to not run the speedtests as often, if you have a metered connection!
 
@@ -40,15 +65,15 @@ It should also work with Ubuntu for Pi, or Arch Linux, but has not been tested o
 
 ## Setup
 
-  1. [Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html). The easiest way (especially on Pi or a Debian system) is via Pip:
-     1. (If on Pi/Debian): `sudo apt-get install -y python3-pip`
-     2. (Everywhere): `pip3 install ansible`
-  2. Clone this repository: `git clone https://github.com/geerlingguy/internet-pi.git`, then enter the repository directory: `cd internet-pi`.
-  3. Install requirements: `ansible-galaxy collection install -r requirements.yml` (if you see `ansible-galaxy: command not found`, restart your SSH session or reboot the Pi and try again)
-  4. Make copies of the following files and customize them to your liking:
-     - `example.inventory.ini` to `inventory.ini` (replace IP address with your Pi's IP, or comment that line and uncomment the `connection=local` line if you're running it on the Pi you're setting up).
-     - `example.config.yml` to `config.yml`
-  5. Run the playbook: `ansible-playbook main.yml`
+1. [Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html). The easiest way (especially on Pi or a Debian system) is via Pip:
+   1. (If on Pi/Debian): `sudo apt-get install -y python3-pip`
+   2. (Everywhere): `pip3 install ansible`
+2. Clone this repository: `git clone https://github.com/geerlingguy/internet-pi.git`, then enter the repository directory: `cd internet-pi`.
+3. Install requirements: `ansible-galaxy collection install -r requirements.yml` (if you see `ansible-galaxy: command not found`, restart your SSH session or reboot the Pi and try again)
+4. Make copies of the following files and customize them to your liking:
+   - `example.inventory.ini` to `inventory.ini` (replace IP address with your Pi's IP, or comment that line and uncomment the `connection=local` line if you're running it on the Pi you're setting up).
+   - `example.config.yml` to `config.yml`
+5. Run the playbook: `ansible-playbook main.yml`
 
 > **If running locally on the Pi**: You may encounter an error like "Error while fetching server API version". If you do, please either reboot or log out and log back in, then run the playbook again.
 
@@ -102,7 +127,7 @@ docker system prune --all       # deletes unused images
 
 ### Configurations and internet-monitoring images
 
-Upgrades for the other configurations are similar (go into the directory, and run the same `docker-compose` commands. Make sure to `cd` into the `config_dir` that you use in your `config.yml` file. 
+Upgrades for the other configurations are similar (go into the directory, and run the same `docker-compose` commands. Make sure to `cd` into the `config_dir` that you use in your `config.yml` file.
 
 Alternatively, you may update the initial `config.yml` in the the repo folder and re-run the main playbook: `ansible-playbook main.yml`. At some point in the future, a dedicated upgrade playbook may be added, but for now, upgrades may be performed manually as shown above.
 
