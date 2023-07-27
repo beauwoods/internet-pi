@@ -25,7 +25,7 @@ monitoring_ping_hosts:  # [URL];[HUMAN_READABLE_NAME]
   - http://www.google.com/;google.com
   - https://cloudflare.com;cloudflare.com
   - https://nextdns.io;nextdns.io
-  - https://tailscale.com;tailscale.com
+  - https://login.tailscale.com;tailscale.com
 
 # Prometheus configuration.
 prometheus_monitor_prometheus: false 
