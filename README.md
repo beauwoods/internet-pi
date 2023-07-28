@@ -22,7 +22,7 @@ I've changed the install instructions because it was always a pain to get `pip` 
    ```
 2. Second, let's install some of the other dependencies, like Ansible and Docker. I like getting these from the official Raspberry Pi repos, rather than `pip`, which always gave me fits. To each their own.
    `sudo apt install docker ansible`
-3. Now clone my forked repo. Or if you want the OG, refer to the Setup instructions in Jeff's original `README.md ` - the rest of what's here is taken from down there anyway. 
+3. Now clone my forked repo. Or if you want the OG, refer to the Setup instructions in Jeff's original `README.md ` - the rest of what's here is taken from down there anyway.
    `gh repo clone beauwoods/internet-pi`
 4. Install requirements: `ansible-galaxy collection install -r requirements.yml` (if you see `ansible-galaxy: command not found`, restart your SSH session or reboot the Pi and try again)
 5. Make copies of the following files and customize them to your liking:
@@ -32,6 +32,12 @@ I've changed the install instructions because it was always a pain to get `pip` 
 6. Run the playbook: `ansible-playbook main.yml`
 
 > **If running locally on the Pi**: You may encounter an error like "Error while fetching server API version". If you do, please either reboot or log out and log back in, then run the playbook again.
+
+Alternately, this install script should (hopefully) work:
+
+```
+curl -sSL https://raw.githubusercontent.com/beauwoods/internet-pi/master/install.sh | bash
+```
 
 ## Features
 

@@ -6,29 +6,6 @@
 # Pi-hole for network-wide ad-blocking and local DNS, and other optional features like Shelly Plug Monitoring, 
 # AirGradient Monitoring, and Starlink Monitoring.
 
-# Check if the script is run as root
-# This is necessary because the installation process requires root privileges to install packages and modify system configurations
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 
-   exit 1
-fi
-
-# Determine the operating system
-# The script is designed to work on Linux, so we check if the operating system is Linux
-OS=$(uname)
-if [[ "$OS" != "Linux" ]]; then
-   echo "This script is only compatible with Linux"
-   exit 1
-fi
-
-# Determine the architecture
-# The script is designed to work on x86_64 architecture, so we check if the architecture is x86_64
-ARCH=$(uname -m)
-if [[ "$ARCH" != "x86_64" ]]; then
-   echo "This script is only compatible with x86_64 architecture"
-   exit 1
-fi
-
 # Install necessary dependencies
 # The project requires git to clone the repository and Ansible to run the playbook
 echo "Installing necessary dependencies..."
