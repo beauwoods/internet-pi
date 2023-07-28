@@ -50,7 +50,6 @@ for host in "${monitoring_ping_hosts[@]}"; do
   echo "  - $host" >> config.yml
 done
 
-
 # Ask the user if they want to install Pi-hole
 # Pi-hole is a network-wide ad blocker that also provides local DNS services
 read -p "Do you want to install Pi-hole? (y/n): " pihole_enable

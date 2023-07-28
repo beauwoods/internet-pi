@@ -10,18 +10,8 @@ One of the main updaets I've (tried) to make is to add the ability to disable Gr
 
 I've changed the install instructions because it was always a pain to get `pip` to do anything for me and disdain installing more cruft than is needed or relying on unneeded services.
 
-1. First, let's install github from their [documentation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md "GitHub official documentation for installing gh for Raspberry Pi").
-
-   ```
-   type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-   curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
-   && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
-   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-   && sudo apt update \
-   && sudo apt install gh -y
-   ```
-2. Second, let's install some of the other dependencies, like Ansible and Docker. I like getting these from the official Raspberry Pi repos, rather than `pip`, which always gave me fits. To each their own.
-   `sudo apt install docker ansible`
+1. First, let's install dependencies, like git, Ansible, and Docker. I like getting these from the official Raspberry Pi repos, rather than `pip`, which always gave me fits. To each their own.
+2. `sudo apt install git docker ansible`
 3. Now clone my forked repo. Or if you want the OG, refer to the Setup instructions in Jeff's original `README.md ` - the rest of what's here is taken from down there anyway.
    `gh repo clone beauwoods/internet-pi`
 4. Install requirements: `ansible-galaxy collection install -r requirements.yml` (if you see `ansible-galaxy: command not found`, restart your SSH session or reboot the Pi and try again)

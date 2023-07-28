@@ -6,20 +6,31 @@
 # Pi-hole for network-wide ad-blocking and local DNS, and other optional features like Shelly Plug Monitoring, 
 # AirGradient Monitoring, and Starlink Monitoring.
 
+# Halt if any errors happen to avoid having a half-broken install
+set -e
+
 # Install necessary dependencies
 # The project requires git to clone the repository and Ansible to run the playbook
 echo "Installing necessary dependencies..."
-apt-get update
-apt-get install -y git ansible
+apt-get update && \
+apt-get install -y git ansible docker 1> /dev/null
 
 # Clone the GitHub repo
 # The project's code is hosted on GitHub, so we clone the repo to get the code
 echo "Cloning the GitHub repo..."
-git clone https://github.com/beauwoods/internet-pi.git
+git clone https://github.com/beauwoods/internet-pi.git 1> /dev/null
 
 # Change directory to the cloned repo
 # The Ansible playbook is located in the root of the repo, so we change directory to the repo
-cd internet-pi
+cd internet-pi 1> /dev/null
+
+# Run the configuration script so we can create a custom version of the config.yml
+echo "Running the configuration script, based on the example config in the repository." 
+chmod +x configure.sh
+bash configure.sh
+
+# Copy the example inventory to the usable inventory
+cp example.inventory.ini inventory.ini
 
 # Run the Ansible playbook
 # The playbook automates the configuration of the Raspberry Pi according to the project's specifications
@@ -36,14 +47,6 @@ fi
 echo "Installation completed successfully!"
 # If the playbook run is successful, we notify the user that the installation is complete
 
-# Ask the user if they want to run the configuration script
-read -p "Do you want to run the configuration script now? (y/n): " run_config
-if [[ "$run_config" == "y" ]]; then
-  # Run the configuration script
-  bash configure.sh
-else
-  echo "You can run the configuration script later by running 'bash configure.sh'"
-fi
 
 # For more information about the project, please visit the GitHub repo at:
 # https://github.com/beauwoods/internet-pi
